@@ -5,31 +5,27 @@ if (isset($_POST['reg_btn'])) {
 
 	$username   = mysqli_real_escape_string($con, $_POST['username']);
 	$email	    = mysqli_real_escape_string($con, $_POST['email']);
-	$phone	    = mysqli_real_escape_string($con, $_POST['phone']);
-	$pass = mysqli_real_escape_string($con, $_POST['pass']);
-	$cpass = mysqli_real_escape_string($con, $_POST['cpass']);
+	$password_1 = mysqli_real_escape_string($con, $_POST['password_1']);
+	$password_2 = mysqli_real_escape_string($con, $_POST['password_2']);
 
 	// checking filled
 	if (empty($username)) { 
-		echo "Username required";
+		echo "Username is required";
 	}
 
 	if (empty($email)) {
-		echo "Email required";
-	}
-	if (empty($phone)) {
-		echo "phone number required";
+		echo "Email is required";
 	}
 
-	if ($pass != $cpass) {
-		echo "Password you typed doesn't match";
+	if ($password_1 != $password_2) {
+		echo "-Password you typed doesn't match";
 	} 
 
-	if (empty($pass)) {
-		echo "Password required";
+	if (empty($password_1)) {
+		echo "-Password is required";
 	}
 
-	$user_check_query = "SELECT * FROM users WHERE name='$username' OR email='$email' LIMIT 1";
+	$user_check_query = "SELECT * FROM users WHERE username='$username' OR email='$email' LIMIT 1";
 	$result = mysqli_query($con, $user_check_query);
 	$user = mysqli_fetch_assoc($result);
 
@@ -46,11 +42,12 @@ if (isset($_POST['reg_btn'])) {
 
 
 	// Insert New Data
-	if ($pass = md5($pass)) 
+	if ($password = md5($password_1)) 
 	{
-		$query = "INSERT INTO users (name, email, phone, pass) VALUES ('$username', '$email', '$phone', '$pass')";
+		$query = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
 		mysqli_query($con, $query);
 		$_SESSION['username'] = $username;
+		$_SESSION['success']  = "You're now logged in";
 		header('location: index.php');
 	}
 
@@ -59,21 +56,21 @@ if (isset($_POST['reg_btn'])) {
 // Click Login
 if (isset($_POST['login_user'])) {
 	$username = mysqli_real_escape_string($con, $_POST['username']);
-	$pass = mysqli_real_escape_string($con, $_POST['pass']);
+	$password = mysqli_real_escape_string($con, $_POST['password']);
 
 	if (empty($username)) {
 		echo "Username is required";
 	}
 
-	if (empty($pass)) {
+	if (empty($password)) {
 		echo "Password is required";
 	}
 
-	if ($pass = md5($pass)) 
+	if ($password = md5($password)) 
 	{
 		;
 
-		$query = "SELECT * FROM users WHERE username='$username' AND password='$pass'";
+		$query = "SELECT * FROM users WHERE username='$username' AND password='$password'";
 		$results = mysqli_query($con, $query);
 		if (mysqli_num_rows($results) == 1) {
 			$_SESSION['username'] = $username;
